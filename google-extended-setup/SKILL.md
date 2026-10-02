@@ -4,8 +4,10 @@ description: >
   Set up and use the EXTENDED Google functions for Claude — Gmail, Google
   Tasks, Google Calendar — i.e. everything the standard Claude Code /
   Claude Cowork connectors cannot do but can be added with Python + a
-  Google OAuth token. Gmail: attach files, send, reply in-thread, threaded
-  reply WITH attachments, download attachments. Google Tasks: full CRUD
+  Google OAuth token. Gmail: attach files straight from disk (new mail,
+  drafts, threaded replies), download attachments, work with several Gmail
+  accounts; the connector itself now sends, replies and forwards, but only
+  takes attachments as inline base64. Google Tasks: full CRUD
   (list / add / edit / complete / reopen / delete) — there is no standard
   Tasks connector, so this is the whole Tasks capability. Google Calendar:
   handled by the standard Calendar connector (documented for completeness).
@@ -20,8 +22,8 @@ description: >
 # Google Extended Setup for Claude
 
 Extends Claude's Google integration beyond the built-in connectors:
-**Gmail** attachments/sending, full **Google Tasks**, and **Google
-Calendar** notes.
+**Gmail** attachments (from disk, in threads, downloads) and several
+accounts, full **Google Tasks**, and **Google Calendar** notes.
 
 ## How to use this skill — two modes
 
@@ -42,7 +44,7 @@ Either way the OAuth token (§2) must exist first.
 
 | Service | Standard Claude connector | Connector CANNOT | This skill adds |
 |---|---|---|---|
-| **Gmail** | Gmail MCP — search, read, draft, labels | attach files, send, download attachments | Python scripts (§3) |
+| **Gmail** | Gmail MCP — search, read, draft, send, reply, forward, labels | attach files from disk (only inline base64), attach files to replies, download attachments, use a second account | Python scripts (§3, §8) |
 | **Google Tasks** | **none** | — | `google_tasks.py` — the entire capability (§4) |
 | **Google Calendar** | Calendar MCP — list/get/create/update/delete events, respond, suggest times | nothing missing | nothing needed (§5) |
 
@@ -83,8 +85,17 @@ How to create the token in the first place → §6.
 ## 3. Gmail
 
 **Standard connector can:** search threads, read messages, create drafts
-(incl. threaded reply drafts), manage labels.
-**Cannot:** attach files, send, download attachments → the scripts below.
+(incl. threaded reply drafts), send, reply, forward, manage labels.
+**Cannot (in practice):**
+- attach a file from disk: its draft/send tools take attachments only as
+  base64 text inside the tool call, which is impractical for real PDFs or
+  figures, and its reply tool takes no attachments at all;
+- download an attachment: it shows attachment names and ids but has no
+  tool to save the file;
+- reach a second Gmail account: it is linked to one account.
+
+→ the scripts below (and `gmail_switch.py`, §8, for several accounts).
+Plain sends and replies without files can go through either route.
 
 Find `<message_id>` / `<thread_id>` with the Gmail MCP connector
 (`search_threads` / `get_thread`) — hex strings like `18c4f2a9b0e1d3a7`.

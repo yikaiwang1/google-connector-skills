@@ -28,8 +28,12 @@ proceed in either case.
 
 Extended Google functions for Claude:
 
-- **Gmail** — attach files, send, reply in-thread, threaded reply *with*
-  attachments, download attachments (the Gmail MCP connector can't do these).
+- **Gmail** — attach files straight from disk (new mail, drafts, threaded
+  replies), download attachments, and switch between several Gmail
+  accounts. The Gmail MCP connector now sends, replies and forwards, but it
+  takes attachments only as inline base64 text (impractical for real
+  files), its replies take no attachments, it cannot save attachments, and
+  it is linked to one account.
 - **Google Tasks** — full CRUD (list / add / edit / complete / reopen /
   delete). There is no standard Tasks connector, so the bundled
   `google_tasks.py` is the entire capability.
